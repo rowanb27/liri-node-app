@@ -11,19 +11,16 @@ var command = process.argv[2];
 var fs = require("fs");
 
 
-
-
-
 // MAIN LOGIC
 if (command === "movie-this") {
     movieThis();
    
 } else if (command === "spotify-this-song"){
-   spotifyThis(process.argv[3]);
+  spotifyThis(process.argv[3]);
 
 }
   else if (command === "concert-this"){
-   
+   concertThis();
 } else if (command === "do-what-it-says"){
    doWhatItSays();
 };
@@ -67,6 +64,7 @@ console.log(JSON.stringify('Preview Link: ' + data.tracks.items[0].album.externa
 });
 }
 
+
 function doWhatItSays() {
 
 fs.readFile("random.txt", "utf8", function(error, data) {
@@ -94,3 +92,25 @@ fs.readFile("random.txt", "utf8", function(error, data) {
   }
 });
 };
+
+function concertThis(artistName) {
+
+        var URL = `https://rest.bandsintown.com/artist/${artistName}/events?app_id=codingbootcamp`;
+
+        axios.get(URL).then((response) => {
+             
+            const jsonData = response.data;
+
+            const showConcertData = [
+                "Venue Name: " + jsonData[0].venue.name,
+                "Venue Location: " + jsonData[0].venue.city + " , " + jsonData[0].venue.region,
+                "Date and Time: " + moment(jsonData.datetime).format("LLL")
+            ].join("\n\n");
+
+            return showConcertData;
+        }).then(data => {
+            return storeAndDisplayData(data);
+        }).catch(err => {
+            console.log(err);
+        });
+    }
